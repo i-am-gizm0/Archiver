@@ -7,9 +7,14 @@ import { exec as execCallback } from 'child_process';
 import { gzip } from 'zlib';
 const exec = promisify(execCallback);
 
-const cronSchedule = process.env.SCHEDULE || '0 0 * * *';
-schedule(cronSchedule, run);
-console.log(`Configured to run on schedule ${cronSchedule}`);
+if (process.argv.length < 3 || process.argv[process.argv.length - 1] != '-i') {
+    const cronSchedule = process.env.SCHEDULE || '0 0 * * *';
+    schedule(cronSchedule, run);
+    console.log(`Configured to run on schedule ${cronSchedule}`);
+} else {
+    console.log('Running now');
+    run();
+}
 
 async function run() {
     console.log(`Running`);
@@ -35,11 +40,18 @@ async function eachDir(folder: string) {
             console.log(`Processing ${file}`);
             const oldFile = join(folder, file);
             console.log(`Compressing`);
-            await exec(`gzip ${oldFile}`);
+            try {
+                await exec(`gzip ${oldFile}`);
+            } catch (e) {
+                console.warn(`gzip errored: ${e}`);
+                try {
+                    await exec(`rm -f ${oldFile}`);
+                } catch (e) {
+                    console.warn(`rm errored: ${e}`);
+                }
+            }
             console.log(`Renaming file`);
             await rename(`${oldFile}.gz`, join(folder, `${file}.${(new Date()).getTime()}.gz`));
         }
     });
 }
-
-run();

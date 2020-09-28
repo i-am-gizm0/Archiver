@@ -9,10 +9,20 @@ on:
 jobs:
 
   build:
+    name: Docker Build
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Wait on Node build
+      uses: lewagon/wait-on-check-action@v0.1
+      with:
+        ref: master
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        checkName: Node Build
+        wait-interval: 20
+
     - name: Build the Docker image
       run: docker build . --tag iamgizm0/archiver:$(date +%s)

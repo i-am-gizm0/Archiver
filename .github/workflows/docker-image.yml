@@ -21,7 +21,7 @@ jobs:
       with:
         ref: master
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        check-name: Node Build
+        checkName: Node Build
         wait-interval: 20
 
     - name: Build the Docker image

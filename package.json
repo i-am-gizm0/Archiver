@@ -17,6 +17,6 @@
   },
   "dependencies": {
     "node-cron": "^2.0.3",
-    "ts-node": "^9.0.0"
+    "ts-node": "^10.1.0"
   }
 }
